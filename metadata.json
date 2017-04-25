@@ -1,0 +1,8 @@
+{
+  "uuid": "lwsm@johannes.super-productivity.com",
+  "shell-version": [
+    "3.18.5"
+  ],
+  "name": "Window Session Manager",
+  "description": "An indicator that let's you save and restore your open apps and the window positions and arrangements over multiple real and virtual displays."
+}
