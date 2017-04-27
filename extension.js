@@ -1,8 +1,6 @@
 const St = imports.gi.St;
 const Main = imports.ui.main;
-const Soup = imports.gi.Soup;
 const Lang = imports.lang;
-const Mainloop = imports.mainloop;
 const PanelMenu = imports.ui.panelMenu;
 const PopupMenu = imports.ui.popupMenu;
 const Clutter = imports.gi.Clutter;
@@ -12,12 +10,7 @@ const GLib = imports.gi.GLib;
 // this produces errors
 //const GFile = imports.gi.GFile;
 const Gio = imports.gi.Gio;
-const FileUtils = imports.misc.fileUtils;
 
-const TW_URL = 'https://transferwise.com/api/v1/payment/calculate';
-const TW_AUTH_KEY = 'dad99d7d8e52c2c8aaf9fda788d8acdc';
-
-let _httpSession;
 const WindowSessionIndicator = new Lang.Class({
   Name: 'WindowSessionIndicator',
   Extends: PanelMenu.Button,
@@ -91,20 +84,47 @@ const WindowSessionIndicator = new Lang.Class({
   _activateSession: function (sessionName) {
     global.log('super', sessionName);
     const result = this._run('lwsm restore ' + sessionName);
-    console.log('super', result);
-    console.log('super', result.success);
+    global.log('super RESULT', JSON.stringify(result));
   },
 
-  _run: function (command) {
-    let result;
-    try {
-      let [res, out, err, status] = GLib.spawn_command_line_sync(command, null, null, null, null);
-      result = { success: res, callback: out.toString() };
+  _run: function (cmd) {
+    global.log('super CMD', cmd);
+    global.log('super CMD', GLib.get_user_name ());
+    let [success, pid] = GLib.spawn_async(null,
+      //['lwsm', 'restore', 'DEFAULT'],
+      ['su - $USER_X -c', 'restore', 'DEFAULT'],
+      null,
+      GLib.SpawnFlags.SEARCH_PATH | GLib.SpawnFlags.DO_NOT_REAP_CHILD,
+      null);
+
+    if (!success) {
+      global.log('super ERROR NO SUCCESS');
+      return;
     }
-    catch (e) {
-      result = { success: false, callback: "ERROR" };
-    }
-    return result;
+
+    GLib.child_watch_add(GLib.PRIORITY_DEFAULT, pid, function (pid, status) {
+      GLib.spawn_close_pid(pid);
+
+      if (status !== 0 && status !== '0') {
+        global.log('super ERROR');
+      }
+      else {
+        global.log('super SUCCESS', status);
+      }
+    });
+
+    //let result;
+    //try {
+    //  //Util.spawn(["lwsm", "restore"]);
+    //  let [res, out, err, status] = GLib.spawn_command_line_sync(cmd, null, null, null, null);
+    //  global.log('super DIRECT RESULT', res, out, err, status);
+    //  result = { success: res, callback: out.toString() };
+    //}
+    //catch (e) {
+    //  global.log('super ERROR RESULT', e);
+    //  result = { success: false, callback: "ERROR" };
+    //}
+    //return result;
   }
 });
 
