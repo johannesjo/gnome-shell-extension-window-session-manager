@@ -90,7 +90,22 @@ const WindowSessionIndicator = new Lang.Class({
 
   _activateSession: function (sessionName) {
     global.log('super', sessionName);
+    const result = this._run('lwsm restore ' + sessionName);
+    console.log('super', result);
+    console.log('super', result.success);
   },
+
+  _run: function (command) {
+    let result;
+    try {
+      let [res, out, err, status] = GLib.spawn_command_line_sync(command, null, null, null, null);
+      result = { success: res, callback: out.toString() };
+    }
+    catch (e) {
+      result = { success: false, callback: "ERROR" };
+    }
+    return result;
+  }
 });
 
 let wsMenu;
