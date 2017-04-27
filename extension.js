@@ -6,13 +6,16 @@ const Mainloop = imports.mainloop;
 const PanelMenu = imports.ui.panelMenu;
 const PopupMenu = imports.ui.popupMenu;
 const Clutter = imports.gi.Clutter;
-const Extension = ExtensionUtils.getCurrentExtension();
+//const Extension = ExtensionUtils.getCurrentExtension();
 const GLib = imports.gi.GLib;
+
+// this produces errors
+//const GFile = imports.gi.GFile;
 const Gio = imports.gi.Gio;
+const FileUtils = imports.misc.fileUtils;
 
 const TW_URL = 'https://transferwise.com/api/v1/payment/calculate';
 const TW_AUTH_KEY = 'dad99d7d8e52c2c8aaf9fda788d8acdc';
-global.log('I DO');
 
 let _httpSession;
 const WindowSessionIndicator = new Lang.Class({
@@ -57,7 +60,12 @@ const WindowSessionIndicator = new Lang.Class({
   },
 
   _createMenuItems: function () {
-    let homePath = GLib.get_home_dir();
+    const HOME_PATH = GLib.get_home_dir();
+    const LWSM_PATH = HOME_PATH + '/.lwsm/sessionData';
+    //this.home_dir = Gio.file_new_for_path(GLib.get_home_dir());
+    //this.current_dir = this.home_dir;
+    //this.current_dir.enumerate_children('*', 0, null, null);
+    //this.processDirectory(this.current_dir.enumerate_children('*', 0, null, null));
 
     const list = [
       'YEEE',
@@ -66,14 +74,37 @@ const WindowSessionIndicator = new Lang.Class({
     ];
     for (let i = 0; i < list.length; i++) {
       let listItem = list[i];
-      this._sessionItems[i] = new PopupMenu.PopupMenuItem(listItem);
-      this._sessionSection.addMenuItem(homePath + this._sessionItems[i]);
+      this._sessionItems[i] = new PopupMenu.PopupMenuItem(HOME_PATH + listItem);
+      this._sessionSection.addMenuItem(this._sessionItems[i]);
       //this._sessionItems[i].connect('activate', Lang.bind(this, function (actor) {
       //  this._activate(actor);
       //}));
     }
-
   },
+
+  //processDirectory : function(children) {
+  //  let files = [];
+  //  let dirs = [];
+  //  let file_info = null;
+  //  while ((file_info = children.next_file(null, null)) !== null) {
+  //    if (file_info.get_is_hidden()) { continue; }
+  //    if (isDirectory(file_info)) { dirs.push(file_info); }
+  //    else { files.push(file_info); }
+  //  }
+  //  children.close(null, null);
+  //
+  //  dirs.sort(fileComparator);
+  //  dirs.forEach(Lang.bind(this, function(fi) {
+  //    this.filesList.addMenuItem(this.createItem(fi));
+  //  }));
+  //  this.filesList.addMenuItem(new PopupMenu.PopupSeparatorMenuItem());
+  //  files.sort(fileComparator);
+  //  files.forEach(Lang.bind(this, function(fi) {
+  //    this.filesList.addMenuItem(this.createItem(fi));
+  //  }));
+  //},
+
+
   _refresh: function () {
     this._loadData(this._refreshUI);
     this._removeTimeout();
