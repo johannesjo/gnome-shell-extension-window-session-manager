@@ -56,16 +56,19 @@ const WindowSessionIndicator = new Lang.Class({
     this._sessionItems = [];
     this._sessionSection = new PopupMenu.PopupMenuSection();
     this.menu.addMenuItem(this._sessionSection);
+    global.log('super,TEST--------------------------------------------------------------------------');
     this._createMenuItems();
   },
 
   _createMenuItems: function () {
     const HOME_PATH = GLib.get_home_dir();
-    const LWSM_PATH = HOME_PATH + '/.lwsm/sessionData';
-    //this.home_dir = Gio.file_new_for_path(GLib.get_home_dir());
-    //this.current_dir = this.home_dir;
-    //this.current_dir.enumerate_children('*', 0, null, null);
-    //this.processDirectory(this.current_dir.enumerate_children('*', 0, null, null));
+    const LWSM_SESSION_PATH = HOME_PATH + '/.lwsm/sessionData';
+    this.lwsmSessionDir = Gio.file_new_for_path(LWSM_SESSION_PATH);
+    this.current_dir = this.lwsmSessionDir;
+    const enumeratedChildren = this.current_dir.enumerate_children('*', 0, null, null);
+    this.processDirectory(enumeratedChildren);
+    global.log('super', this.current_dir);
+    global.log('super', enumeratedChildren);
 
     const list = [
       'YEEE',
@@ -82,28 +85,23 @@ const WindowSessionIndicator = new Lang.Class({
     }
   },
 
-  //processDirectory : function(children) {
-  //  let files = [];
-  //  let dirs = [];
-  //  let file_info = null;
-  //  while ((file_info = children.next_file(null, null)) !== null) {
-  //    if (file_info.get_is_hidden()) { continue; }
-  //    if (isDirectory(file_info)) { dirs.push(file_info); }
-  //    else { files.push(file_info); }
-  //  }
-  //  children.close(null, null);
-  //
-  //  dirs.sort(fileComparator);
-  //  dirs.forEach(Lang.bind(this, function(fi) {
-  //    this.filesList.addMenuItem(this.createItem(fi));
-  //  }));
-  //  this.filesList.addMenuItem(new PopupMenu.PopupSeparatorMenuItem());
-  //  files.sort(fileComparator);
-  //  files.forEach(Lang.bind(this, function(fi) {
-  //    this.filesList.addMenuItem(this.createItem(fi));
-  //  }));
-  //},
+  processDirectory: function (children) {
+    let files = [];
+    let dirs = [];
+    let fileInfo = null;
+    while ((fileInfo = children.next_file(null, null)) !== null) {
+      if (!fileInfo.get_is_hidden() && !isDirectory(fileInfo)) {
+        files.push(fileInfo);
+      }
+    }
+    children.close(null, null);
+    global.log('super', files);
 
+    //files.sort(fileComparator);
+    //files.forEach(Lang.bind(this, function (fi) {
+    //  this.filesList.addMenuItem(this.createItem(fi));
+    //}));
+  },
 
   _refresh: function () {
     this._loadData(this._refreshUI);
@@ -173,3 +171,6 @@ function disable() {
   wsMenu.destroy();
 }
 
+function isDirectory(file) {
+  return Gio.FileType.DIRECTORY === file.get_file_type();
+}
