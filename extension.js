@@ -6,9 +6,6 @@ const PopupMenu = imports.ui.popupMenu;
 const Clutter = imports.gi.Clutter;
 //const Extension = ExtensionUtils.getCurrentExtension();
 const GLib = imports.gi.GLib;
-const Util = imports.misc.util;
-// this produces errors
-//const GFile = imports.gi.GFile;
 const Gio = imports.gi.Gio;
 
 const HOME_PATH = GLib.get_home_dir();
