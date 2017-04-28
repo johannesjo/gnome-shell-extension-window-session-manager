@@ -46,11 +46,13 @@ const WindowSessionIndicator = new Lang.Class({
       y_align: Clutter.ActorAlign.CENTER,
       text: ''
     });
+    this.statusLabel.add_style_class_name('window-session-indicator-label');
 
     let topBox = new St.BoxLayout();
-    topBox.add_actor(button);
+    //topBox.add_actor(button);
     topBox.add_actor(this.statusLabel);
     this.actor.add_actor(topBox);
+    topBox.add_style_class_name('window-session-indicator');
 
     this._sessionItems = [];
     this._sessionSection = new PopupMenu.PopupMenuSection();
@@ -97,7 +99,7 @@ const WindowSessionIndicator = new Lang.Class({
   _startSession: function (sessionName) {
     // Util.spawnCommandLine(LWSM_CMD + ' restore ' + sessionName);
     //global.log('super Return Val', returnVal);
-    this.statusLabel.set_text('LOADING ' + sessionName);
+    this.statusLabel.set_text('loading "' + sessionName + '"');
 
     let [success, pid] = GLib.spawn_async(null,
       [LWSM_CMD, 'restore', sessionName],

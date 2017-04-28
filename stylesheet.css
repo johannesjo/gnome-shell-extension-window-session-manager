@@ -1,9 +1,11 @@
-
-.helloworld-label {
-    font-size: 36px;
-    font-weight: bold;
-    color: #ffffff;
-    background-color: rgba(10,10,10,0.7);
+.window-session-indicator {
+    background-color: transparent;
     border-radius: 5px;
-    padding: .5em;
+    border: 1px solid #ffffff;
+    padding: 1px;
+}
+
+.window-session-indicator-label {
+    border: 1px solid #ffffff;
+    min-width: 20px;
 }
