@@ -1,5 +1,6 @@
 const St = imports.gi.St;
 const Main = imports.ui.main;
+const Mainloop = imports.mainloop;
 const Lang = imports.lang;
 const PanelMenu = imports.ui.panelMenu;
 const PopupMenu = imports.ui.popupMenu;
@@ -22,7 +23,7 @@ const WindowSessionIndicator = new Lang.Class({
   _init: function () {
     this.parent(0.0, 'Window Session Indicator', false);
     this._buildUi();
-    //this._refresh();
+    this._refresh();
   },
 
   _buildUi: function () {
@@ -38,13 +39,15 @@ const WindowSessionIndicator = new Lang.Class({
     this.actor.add_actor(topBox);
     topBox.add_style_class_name('window-session-indicator');
 
-    this._sessionSection = new PopupMenu.PopupMenuSection();
-    this.menu.addMenuItem(this._sessionSection);
-
-    this._createMenuItems();
   },
 
-  _createMenuItems: function () {
+  _createMenu: function () {
+    if (this._sessionSection) {
+      this._sessionSection.removeAll();
+    }
+
+    this._sessionSection = new PopupMenu.PopupMenuSection();
+    this.menu.addMenuItem(this._sessionSection);
     this.lwsmSessionDir = Gio.file_new_for_path(LWSM_SESSION_PATH);
     const enumeratedChildren = this.lwsmSessionDir.enumerate_children('*', 0, null, null);
 
@@ -101,7 +104,28 @@ const WindowSessionIndicator = new Lang.Class({
         }
       });
     }
-  }
+  },
+
+  _refresh: function () {
+    this._createMenu();
+    this._removeTimeout();
+    this._timeout = Mainloop.timeout_add_seconds(10, Lang.bind(this, this._refresh));
+    return true;
+  },
+
+  _removeTimeout: function () {
+    if (this._timeout) {
+      Mainloop.source_remove(this._timeout);
+      this._timeout = null;
+    }
+  },
+  stop: function () {
+    if (this._timeout) {
+      Mainloop.source_remove(this._timeout);
+    }
+    this._timeout = undefined;
+    this.menu.removeAll();
+  },
 });
 
 let wsMenu;
