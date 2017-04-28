@@ -6,10 +6,16 @@ const PopupMenu = imports.ui.popupMenu;
 const Clutter = imports.gi.Clutter;
 //const Extension = ExtensionUtils.getCurrentExtension();
 const GLib = imports.gi.GLib;
-
+const Util = imports.misc.util;
 // this produces errors
 //const GFile = imports.gi.GFile;
 const Gio = imports.gi.Gio;
+
+const HOME_PATH = GLib.get_home_dir();
+const LWSM_PATH = HOME_PATH + '/.lwsm';
+const LWSM_CFG_FILE_PATH = HOME_PATH + '/.lwsm/config.json';
+const LWSM_SESSION_PATH = LWSM_PATH + '/sessionData';
+const LWSM_CMD = HOME_PATH + '/.local/share/gnome-shell/extensions/lwsm@johannes.super-productivity.com/lwsm';
 
 const WindowSessionIndicator = new Lang.Class({
   Name: 'WindowSessionIndicator',
@@ -49,12 +55,11 @@ const WindowSessionIndicator = new Lang.Class({
     this._sessionSection = new PopupMenu.PopupMenuSection();
     this.menu.addMenuItem(this._sessionSection);
     global.log('super, SUPER--------------------------------------------------------------------------');
+
     this._createMenuItems();
   },
 
   _createMenuItems: function () {
-    const HOME_PATH = GLib.get_home_dir();
-    const LWSM_SESSION_PATH = HOME_PATH + '/.lwsm/sessionData';
     this.lwsmSessionDir = Gio.file_new_for_path(LWSM_SESSION_PATH);
     const enumeratedChildren = this.lwsmSessionDir.enumerate_children('*', 0, null, null);
 
@@ -83,35 +88,37 @@ const WindowSessionIndicator = new Lang.Class({
 
   _activateSession: function (sessionName) {
     global.log('super', sessionName);
-    const result = this._run('lwsm restore ' + sessionName);
+
+    const result = this._startSession(sessionName);
     global.log('super RESULT', JSON.stringify(result));
   },
 
-  _run: function (cmd) {
-    global.log('super CMD', cmd);
-    global.log('super CMD', GLib.get_user_name ());
-    let [success, pid] = GLib.spawn_async(null,
-      //['lwsm', 'restore', 'DEFAULT'],
-      ['su - $USER_X -c', 'restore', 'DEFAULT'],
-      null,
-      GLib.SpawnFlags.SEARCH_PATH | GLib.SpawnFlags.DO_NOT_REAP_CHILD,
-      null);
+  _startSession: function (sessionName) {
+    const returnVal = Util.spawnCommandLine(LWSM_CMD + ' restore ' + sessionName);
+    //global.log('super Return Val', returnVal);
 
-    if (!success) {
-      global.log('super ERROR NO SUCCESS');
-      return;
-    }
-
-    GLib.child_watch_add(GLib.PRIORITY_DEFAULT, pid, function (pid, status) {
-      GLib.spawn_close_pid(pid);
-
-      if (status !== 0 && status !== '0') {
-        global.log('super ERROR');
-      }
-      else {
-        global.log('super SUCCESS', status);
-      }
-    });
+    //let [success, pid] = GLib.spawn_async(null,
+    //  //['lwsm', 'restore', 'DEFAULT'],
+    //  ['su - $USER_X -c', 'restore', 'DEFAULT'],
+    //  null,
+    //  GLib.SpawnFlags.SEARCH_PATH | GLib.SpawnFlags.DO_NOT_REAP_CHILD,
+    //  null);
+    //
+    //if (!success) {
+    //  global.log('super ERROR NO SUCCESS');
+    //  return;
+    //}
+    //
+    //GLib.child_watch_add(GLib.PRIORITY_DEFAULT, pid, function (pid, status) {
+    //  GLib.spawn_close_pid(pid);
+    //
+    //  if (status !== 0 && status !== '0') {
+    //    global.log('super ERROR');
+    //  }
+    //  else {
+    //    global.log('super SUCCESS', status);
+    //  }
+    //});
 
     //let result;
     //try {
