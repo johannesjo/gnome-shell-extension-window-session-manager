@@ -102,7 +102,7 @@ const WindowSessionIndicator = new Lang.Class({
       icon_name: 'document-save-symbolic',
       style_class: 'popup-menu-icon-save'
     }));
-
+    //.get_text()
     item.connect('activate', Lang.bind(that, function () {
       that._restoreSession(fileName);
     }));
@@ -123,15 +123,19 @@ const WindowSessionIndicator = new Lang.Class({
     // add main session label and icon
     itemActor.add(new St.Icon({
       icon_name: 'media-playback-start-symbolic',
-      style_class: 'popup-menu-icon-play'
+      style_class: 'popup-menu-icon-play',
     }));
     itemActor.add(new St.Label({ text: fileName }), { expand: true });
 
     // add save button
-    let _saveBtn = new St.Button();
+    let _saveBtn = new St.Button({
+      reactive: true,
+      can_focus: true,
+      x_fill: true,
+    });
     _saveBtn.child = new St.Icon({
       icon_name: 'document-save-symbolic',
-      style_class: 'popup-menu-icon-save'
+      style_class: 'popup-menu-icon-save',
     });
     _saveBtn.connect('clicked', Lang.bind(that, function () {
       that._saveSession(fileName);
@@ -142,7 +146,11 @@ const WindowSessionIndicator = new Lang.Class({
     });
 
     // add remove button
-    let _removeBtn = new St.Button();
+    let _removeBtn = new St.Button({
+      reactive: true,
+      can_focus: true,
+      x_fill: true,
+    });
     _removeBtn.child = new St.Icon({
       icon_name: 'edit-delete-symbolic',
       style_class: 'popup-menu-icon-delete'
