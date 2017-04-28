@@ -61,11 +61,15 @@ const WindowSessionIndicator = new Lang.Class({
     enumeratedChildren.close(null, null);
 
     files.forEach(Lang.bind(this, function (file) {
-      this._sessionSection.addMenuItem(this.createItem(file));
+      this._sessionSection.addMenuItem(this.createRestoreItem(file));
+    }));
+
+    files.forEach(Lang.bind(this, function (file) {
+      this._sessionSection.addMenuItem(this.createSaveItem(file));
     }));
   },
 
-  createItem: function (fileInfo) {
+  createRestoreItem: function (fileInfo) {
     const fileName = fileInfo.get_display_name().replace('.json', '');
     const item = new PopupMenu.PopupMenuItem('Load ' + fileName);
     item.connect('activate', Lang.bind(this, function () {
@@ -73,16 +77,24 @@ const WindowSessionIndicator = new Lang.Class({
     }));
     return item;
   },
+  createSaveItem: function (fileInfo) {
+    const fileName = fileInfo.get_display_name().replace('.json', '');
+    const item = new PopupMenu.PopupMenuItem('Save current to ' + fileName);
+    item.connect('activate', Lang.bind(this, function () {
+      this._saveSession(fileName);
+    }));
+    return item;
+  },
 
   _saveSession: function (sessionName) {
-    this._ExecLwsm('save', sessionName);
+    this._execLwsm('save', sessionName);
   },
 
   _restoreSession: function (sessionName) {
-    this._ExecLwsm('restore', sessionName);
+    this._execLwsm('restore', sessionName);
   },
 
-  _ExecLwsm: function (action, sessionName) {
+  _execLwsm: function (action, sessionName) {
     const that = this;
     this.statusLabel.set_text(action + ' "' + sessionName + '"');
     let [success, pid] = GLib.spawn_async(null,
