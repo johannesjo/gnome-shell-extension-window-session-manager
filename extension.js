@@ -103,6 +103,7 @@ const WindowSessionIndicator = new Lang.Class({
       reactive: true,
       can_focus: true,
       x_fill: true,
+      style_class: 'button-save',
     });
     _saveBtn.child = new St.Icon({
       icon_name: 'document-save-symbolic',
@@ -134,6 +135,7 @@ const WindowSessionIndicator = new Lang.Class({
 
     // add save button
     let _saveBtn = new St.Button({
+      style_class: 'button-save',
       reactive: true,
       can_focus: true,
       x_fill: true,
@@ -152,6 +154,7 @@ const WindowSessionIndicator = new Lang.Class({
 
     // add remove button
     let _removeBtn = new St.Button({
+      style_class: 'button-delete',
       reactive: true,
       can_focus: true,
       x_fill: true,

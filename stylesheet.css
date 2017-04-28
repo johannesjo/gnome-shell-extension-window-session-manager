@@ -8,8 +8,8 @@
 
 .window-session-indicator-label {
     background: #ffffff;
-    border: 1px solid #000000;
-    color: #000000;
+    border: 1px solid #333333;
+    color: #333333;
     min-width: 14px;
     font-size: 80%;
     text-align: center;
@@ -18,8 +18,6 @@
 .popup-menu-icon-play,
 .popup-menu-icon-delete,
 .popup-menu-icon-save {
-    border: 1px solid darkgray;
-    border-radius: 200px;
     font-size: 8px;
     width: 24px;
     height: 24px;
@@ -27,4 +25,26 @@
 
 .popup-menu-icon-delete {
     color: red;
+}
+
+.button-delete,
+.button-save {
+    border: 1px solid darkgray;
+    border-radius: 200px;
+}
+
+.button-delete:hover {
+    background: red;
+    color: #ffffff;
+    cursor: pointer;
+}
+
+.button-delete:hover .popup-menu-icon-delete {
+    color: orange;
+}
+
+.button-save:hover {
+    background: #333333;
+    color: #ffffff;
+    cursor: pointer;
 }
