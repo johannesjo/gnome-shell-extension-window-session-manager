@@ -16,7 +16,7 @@ const LWSM_PATH = HOME_PATH + '/.lwsm';
 const LWSM_CFG_FILE_PATH = HOME_PATH + '/.lwsm/config.json';
 const LWSM_SESSION_PATH = LWSM_PATH + '/sessionData';
 const LWSM_CMD = HOME_PATH + '/.local/share/gnome-shell/extensions/lwsm@johannes.super-productivity.com/lwsm';
-const DEFAULT_INDICATOR_TEXT = 'ws';
+const DEFAULT_INDICATOR_TEXT = 'W';
 
 const WindowSessionIndicator = new Lang.Class({
   Name: 'WindowSessionIndicator',
@@ -85,41 +85,37 @@ const WindowSessionIndicator = new Lang.Class({
     const fileName = fileInfo.get_display_name().replace('.json', '');
     const item = new PopupMenu.PopupMenuItem('Load ' + fileName);
     item.connect('activate', Lang.bind(this, function () {
-      this._activateSession(fileName);
+      this._restoreSession(fileName);
     }));
     return item;
   },
 
-  _activateSession: function (sessionName) {
-    global.log('super', sessionName);
-
-    const result = this._startSession(sessionName);
-    global.log('super RESULT', JSON.stringify(result));
+  _saveSession: function (sessionName) {
+    this._ExecLwsm('save', sessionName);
   },
 
-  _startSession: function (sessionName) {
-    const that = this;
-    //global.log('super Return Val', returnVal);
-    this.statusLabel.set_text('loading "' + sessionName + '"');
+  _restoreSession: function (sessionName) {
+    this._ExecLwsm('restore', sessionName);
+  },
 
+  _ExecLwsm: function (action, sessionName) {
+    const that = this;
+    this.statusLabel.set_text(action + ' "' + sessionName + '"');
     let [success, pid] = GLib.spawn_async(null,
-      [LWSM_CMD, 'restore', sessionName],
+      [LWSM_CMD, action, sessionName],
       null,
       GLib.SpawnFlags.SEARCH_PATH | GLib.SpawnFlags.DO_NOT_REAP_CHILD,
       null);
 
     if (!success) {
-      global.log('super ERROR NO SUCCESS');
       that.statusLabel.set_text('ERROR');
     } else {
       GLib.child_watch_add(GLib.PRIORITY_DEFAULT, pid, function (pid, status) {
         GLib.spawn_close_pid(pid);
         if (status !== 0 && status !== '0') {
-          global.log('super ERROR');
           that.statusLabel.set_text('ERROR');
         }
         else {
-          global.log('super SUCCESS', status);
           that.statusLabel.set_text(DEFAULT_INDICATOR_TEXT);
         }
       });
@@ -142,6 +138,8 @@ function disable() {
   wsMenu.destroy();
 }
 
+// HELPER
+// ------
 function isDirectory(file) {
   return Gio.FileType.DIRECTORY === file.get_file_type();
 }
