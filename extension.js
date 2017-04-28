@@ -78,40 +78,45 @@ const WindowSessionIndicator = new Lang.Class({
   },
 
   _createNewSessionItem: function () {
+    const that = this;
     const item = new PopupMenu.PopupMenuItem('', {
       activate: false,
       reactive: true,
       can_focus: false,
     });
     const itemActor = item.actor;
-    const that = this;
-    //this._entry.clutter_text.connect('text-changed', Lang.bind(this, this._onTextChanged));
-    // add main session label
-    itemActor.add(new St.Entry({
+
+    // add input
+    let input = new St.Entry({
       name: 'NewItemInput',
       style_class: 'new-item-input',
       track_hover: true,
       reactive: true,
       can_focus: true,
-    }), {
+    });
+    itemActor.add(input, {
       expand: true
     });
 
-    // add icon
-    itemActor.add(new St.Icon({
+    // add save button
+    let _saveBtn = new St.Button({
+      reactive: true,
+      can_focus: true,
+      x_fill: true,
+    });
+    _saveBtn.child = new St.Icon({
       icon_name: 'document-save-symbolic',
-      style_class: 'popup-menu-icon-save'
+      style_class: 'popup-menu-icon-save',
+    });
+    _saveBtn.connect('clicked', Lang.bind(that, function () {
+      that._saveSession(input.get_text(), function () {
+        that._refresh();
+      });
+      return Clutter.EVENT_STOP;
     }));
-    //.get_text()
-    item.connect('activate', Lang.bind(that, function () {
-      that._restoreSession(fileName);
-    }));
+    itemActor.add(_saveBtn);
 
     return item;
-  },
-
-  _createNewSession: function () {
-
   },
 
   _createMenuItem: function (fileInfo) {
