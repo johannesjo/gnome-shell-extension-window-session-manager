@@ -1,13 +1,15 @@
 .window-session-indicator {
     background-color: transparent;
-    border-radius: 5px;
     border: 1px solid #ffffff;
     padding: 1px;
     margin: 2px 0;
+    border-radius: 3px;
 }
 
 .window-session-indicator-label {
-    border: 1px solid #ffffff;
+    background: #ffffff;
+    border: 1px solid #000000;
+    color: #000000;
     min-width: 14px;
     font-size: 80%;
     text-align: center;

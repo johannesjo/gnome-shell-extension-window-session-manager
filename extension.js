@@ -16,7 +16,7 @@ const LWSM_PATH = HOME_PATH + '/.lwsm';
 const LWSM_CFG_FILE_PATH = HOME_PATH + '/.lwsm/config.json';
 const LWSM_SESSION_PATH = LWSM_PATH + '/sessionData';
 const LWSM_CMD = HOME_PATH + '/.local/share/gnome-shell/extensions/lwsm@johannes.super-productivity.com/lwsm';
-const DEFAULT_INDICATOR_TEXT = 'W';
+const DEFAULT_INDICATOR_TEXT = '';
 
 const WindowSessionIndicator = new Lang.Class({
   Name: 'WindowSessionIndicator',
@@ -29,20 +29,6 @@ const WindowSessionIndicator = new Lang.Class({
   },
 
   _buildUi: function () {
-    let button = new St.Bin({
-      style_class: 'panel-button',
-      reactive: true,
-      can_focus: true,
-      x_fill: true,
-      y_fill: false,
-      track_hover: true
-    });
-    let icon = new St.Icon({
-      icon_name: 'system-run-symbolic',
-      style_class: 'system-status-icon'
-    });
-    button.set_child(icon);
-
     this.statusLabel = new St.Label({
       y_align: Clutter.ActorAlign.CENTER,
       text: DEFAULT_INDICATOR_TEXT
@@ -55,10 +41,8 @@ const WindowSessionIndicator = new Lang.Class({
     this.actor.add_actor(topBox);
     topBox.add_style_class_name('window-session-indicator');
 
-    this._sessionItems = [];
     this._sessionSection = new PopupMenu.PopupMenuSection();
     this.menu.addMenuItem(this._sessionSection);
-    global.log('super, SUPER--------------------------------------------------------------------------');
 
     this._createMenuItems();
   },
