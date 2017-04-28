@@ -42,37 +42,85 @@ const WindowSessionIndicator = new Lang.Class({
   },
 
   _createMenu: function () {
-    if (this._sessionSection) {
-      this._sessionSection.removeAll();
-    }
-
-    this._sessionSection = new PopupMenu.PopupMenuSection();
-    this.menu.addMenuItem(this._sessionSection);
     this.lwsmSessionDir = Gio.file_new_for_path(LWSM_SESSION_PATH);
-    const enumeratedChildren = this.lwsmSessionDir.enumerate_children('*', 0, null, null);
 
+    // read files
+    this.fileList = [];
+    const enumeratedChildren = this.lwsmSessionDir.enumerate_children('*', 0, null, null);
     let fileInfo;
-    let files = [];
     while ((fileInfo = enumeratedChildren.next_file(null, null)) !== null) {
       if (!fileInfo.get_is_hidden() && !isDirectory(fileInfo)) {
-        files.push(fileInfo);
+        this.fileList.push(fileInfo);
       }
     }
     enumeratedChildren.close(null, null);
 
+    // if nothing changed don't refresh menu
+    if (this.fileListBefore && this.fileListBefore.length === this.fileList.length) {
+      return;
+    }
+
+    // remove previous session section
+    if (this._sessionSection) {
+      this._sessionSection.removeAll();
+    }
+
+    // create new session section and menu
+    this._sessionSection = new PopupMenu.PopupMenuSection();
+    this.menu.addMenuItem(this._sessionSection);
+
     const that = this;
-    files.forEach(Lang.bind(this, function (file) {
-      that._sessionSection.addMenuItem(this.createMenuItem(file));
+    this.fileList.forEach(Lang.bind(this, function (file) {
+      that._sessionSection.addMenuItem(this._createMenuItem(file));
     }));
+    that._sessionSection.addMenuItem(this._createNewSessionItem())
+    this.fileListBefore = this.fileList;
   },
 
-  createMenuItem: function (fileInfo) {
+  _createNewSessionItem: function () {
+    const item = new PopupMenu.PopupMenuItem('', {
+      activate: false,
+      reactive: true,
+      can_focus: false,
+    });
+    const itemActor = item.actor;
+    const that = this;
+    //this._entry.clutter_text.connect('text-changed', Lang.bind(this, this._onTextChanged));
+    // add main session label
+    itemActor.add(new St.Entry({
+      name: 'NewItemInput',
+      style_class: 'new-item-input',
+      track_hover: true,
+      reactive: true,
+      can_focus: true,
+    }), {
+      expand: true
+    });
+
+    // add icon
+    itemActor.add(new St.Icon({
+      icon_name: 'document-save-symbolic',
+      style_class: 'popup-menu-icon-save'
+    }));
+
+    item.connect('activate', Lang.bind(that, function () {
+      that._restoreSession(fileName);
+    }));
+
+    return item;
+  },
+
+  _createNewSession: function () {
+
+  },
+
+  _createMenuItem: function (fileInfo) {
     const fileName = fileInfo.get_display_name().replace('.json', '');
     const item = new PopupMenu.PopupMenuItem('');
     const itemActor = item.actor;
     const that = this;
 
-    // add main session label
+    // add main session label and icon
     itemActor.add(new St.Icon({
       icon_name: 'media-playback-start-symbolic',
       style_class: 'popup-menu-icon-play'
