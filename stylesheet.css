@@ -3,9 +3,11 @@
     border-radius: 5px;
     border: 1px solid #ffffff;
     padding: 1px;
+    margin: 2px 0;
 }
 
 .window-session-indicator-label {
     border: 1px solid #ffffff;
-    min-width: 20px;
+    min-width: 14px;
+    font-size: 80%;
 }

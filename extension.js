@@ -16,6 +16,7 @@ const LWSM_PATH = HOME_PATH + '/.lwsm';
 const LWSM_CFG_FILE_PATH = HOME_PATH + '/.lwsm/config.json';
 const LWSM_SESSION_PATH = LWSM_PATH + '/sessionData';
 const LWSM_CMD = HOME_PATH + '/.local/share/gnome-shell/extensions/lwsm@johannes.super-productivity.com/lwsm';
+const DEFAULT_INDICATOR_TEXT = 'ws';
 
 const WindowSessionIndicator = new Lang.Class({
   Name: 'WindowSessionIndicator',
@@ -44,7 +45,7 @@ const WindowSessionIndicator = new Lang.Class({
 
     this.statusLabel = new St.Label({
       y_align: Clutter.ActorAlign.CENTER,
-      text: ''
+      text: DEFAULT_INDICATOR_TEXT
     });
     this.statusLabel.add_style_class_name('window-session-indicator-label');
 
@@ -119,7 +120,7 @@ const WindowSessionIndicator = new Lang.Class({
         }
         else {
           global.log('super SUCCESS', status);
-          that.statusLabel.set_text(sessionName);
+          that.statusLabel.set_text(DEFAULT_INDICATOR_TEXT);
         }
       });
     }
