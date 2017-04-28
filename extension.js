@@ -44,11 +44,12 @@ const WindowSessionIndicator = new Lang.Class({
 
     this.statusLabel = new St.Label({
       y_align: Clutter.ActorAlign.CENTER,
-      text: 'XXXXXXxsxsxs'
+      text: ''
     });
+
     let topBox = new St.BoxLayout();
     topBox.add_actor(button);
-    //topBox.add_actor(this.statusLabel);
+    topBox.add_actor(this.statusLabel);
     this.actor.add_actor(topBox);
 
     this._sessionItems = [];
@@ -79,7 +80,7 @@ const WindowSessionIndicator = new Lang.Class({
 
   createItem: function (fileInfo) {
     const fileName = fileInfo.get_display_name().replace('.json', '');
-    const item = new PopupMenu.PopupMenuItem(fileName);
+    const item = new PopupMenu.PopupMenuItem('Load ' + fileName);
     item.connect('activate', Lang.bind(this, function () {
       this._activateSession(fileName);
     }));
@@ -94,44 +95,33 @@ const WindowSessionIndicator = new Lang.Class({
   },
 
   _startSession: function (sessionName) {
-    const returnVal = Util.spawnCommandLine(LWSM_CMD + ' restore ' + sessionName);
+    // Util.spawnCommandLine(LWSM_CMD + ' restore ' + sessionName);
     //global.log('super Return Val', returnVal);
+    this.statusLabel.set_text('LOADING ' + sessionName);
 
-    //let [success, pid] = GLib.spawn_async(null,
-    //  //['lwsm', 'restore', 'DEFAULT'],
-    //  ['su - $USER_X -c', 'restore', 'DEFAULT'],
-    //  null,
-    //  GLib.SpawnFlags.SEARCH_PATH | GLib.SpawnFlags.DO_NOT_REAP_CHILD,
-    //  null);
-    //
-    //if (!success) {
-    //  global.log('super ERROR NO SUCCESS');
-    //  return;
-    //}
-    //
-    //GLib.child_watch_add(GLib.PRIORITY_DEFAULT, pid, function (pid, status) {
-    //  GLib.spawn_close_pid(pid);
-    //
-    //  if (status !== 0 && status !== '0') {
-    //    global.log('super ERROR');
-    //  }
-    //  else {
-    //    global.log('super SUCCESS', status);
-    //  }
-    //});
+    let [success, pid] = GLib.spawn_async(null,
+      [LWSM_CMD, 'restore', sessionName],
+      null,
+      GLib.SpawnFlags.SEARCH_PATH | GLib.SpawnFlags.DO_NOT_REAP_CHILD,
+      null);
 
-    //let result;
-    //try {
-    //  //Util.spawn(["lwsm", "restore"]);
-    //  let [res, out, err, status] = GLib.spawn_command_line_sync(cmd, null, null, null, null);
-    //  global.log('super DIRECT RESULT', res, out, err, status);
-    //  result = { success: res, callback: out.toString() };
-    //}
-    //catch (e) {
-    //  global.log('super ERROR RESULT', e);
-    //  result = { success: false, callback: "ERROR" };
-    //}
-    //return result;
+    if (!success) {
+      global.log('super ERROR NO SUCCESS');
+      return;
+    }
+
+    const that = this;
+    GLib.child_watch_add(GLib.PRIORITY_DEFAULT, pid, function (pid, status) {
+      GLib.spawn_close_pid(pid);
+
+      if (status !== 0 && status !== '0') {
+        global.log('super ERROR');
+      }
+      else {
+        global.log('super SUCCESS', status);
+        that.statusLabel.set_text(sessionName);
+      }
+    });
   }
 });
 
