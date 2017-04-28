@@ -60,28 +60,55 @@ const WindowSessionIndicator = new Lang.Class({
     }
     enumeratedChildren.close(null, null);
 
+    const that = this;
     files.forEach(Lang.bind(this, function (file) {
-      this._sessionSection.addMenuItem(this.createRestoreItem(file));
-    }));
-
-    files.forEach(Lang.bind(this, function (file) {
-      this._sessionSection.addMenuItem(this.createSaveItem(file));
+      that._sessionSection.addMenuItem(this.createMenuItem(file));
     }));
   },
 
-  createRestoreItem: function (fileInfo) {
+  createMenuItem: function (fileInfo) {
     const fileName = fileInfo.get_display_name().replace('.json', '');
-    const item = new PopupMenu.PopupMenuItem('Load ' + fileName);
+    const item = new PopupMenu.PopupMenuItem('');
+    const itemActor = item.actor;
+
+    // add main session label
+    itemActor.add(new St.Icon({
+      icon_name: 'media-playback-start-symbolic',
+      style_class: 'popup-menu-icon-play'
+    }));
+    itemActor.add(new St.Label({ text: fileName }), { expand: true });
+
+    // add save button
+    let _saveBtn = new St.Button();
+    _saveBtn.child = new St.Icon({
+      icon_name: 'document-save-symbolic',
+      style_class: 'popup-menu-icon-save'
+    });
+    _saveBtn.connect('clicked', Lang.bind(this, function () {
+      this._saveSession(fileName);
+      global.log('super', 'SAVE');
+      return Clutter.EVENT_STOP;
+    }));
+    itemActor.add(_saveBtn, {
+      x_align: St.Align.END,
+    });
+
+    // add remove button
+    let _removeBtn = new St.Button();
+    _removeBtn.child = new St.Icon({
+      icon_name: 'edit-delete-symbolic',
+      style_class: 'popup-menu-icon-delete'
+    });
+    _removeBtn.connect('clicked', Lang.bind(this, function () {
+      global.log('super', 'REMOVE');
+      return Clutter.EVENT_STOP;
+    }));
+    itemActor.add(_removeBtn, {
+      x_align: St.Align.END,
+    });
+
     item.connect('activate', Lang.bind(this, function () {
       this._restoreSession(fileName);
-    }));
-    return item;
-  },
-  createSaveItem: function (fileInfo) {
-    const fileName = fileInfo.get_display_name().replace('.json', '');
-    const item = new PopupMenu.PopupMenuItem('Save current to ' + fileName);
-    item.connect('activate', Lang.bind(this, function () {
-      this._saveSession(fileName);
     }));
     return item;
   },

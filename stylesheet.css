@@ -14,3 +14,17 @@
     font-size: 80%;
     text-align: center;
 }
+
+.popup-menu-icon-play,
+.popup-menu-icon-delete,
+.popup-menu-icon-save {
+    border: 1px solid darkgray;
+    border-radius: 200px;
+    font-size: 8px;
+    width: 24px;
+    height: 24px;
+}
+
+.popup-menu-icon-delete {
+    color: red;
+}
