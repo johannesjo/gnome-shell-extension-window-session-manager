@@ -70,6 +70,7 @@ const WindowSessionIndicator = new Lang.Class({
     const fileName = fileInfo.get_display_name().replace('.json', '');
     const item = new PopupMenu.PopupMenuItem('');
     const itemActor = item.actor;
+    const that = this;
 
     // add main session label
     itemActor.add(new St.Icon({
@@ -84,9 +85,8 @@ const WindowSessionIndicator = new Lang.Class({
       icon_name: 'document-save-symbolic',
       style_class: 'popup-menu-icon-save'
     });
-    _saveBtn.connect('clicked', Lang.bind(this, function () {
-      this._saveSession(fileName);
-      global.log('super', 'SAVE');
+    _saveBtn.connect('clicked', Lang.bind(that, function () {
+      that._saveSession(fileName);
       return Clutter.EVENT_STOP;
     }));
     itemActor.add(_saveBtn, {
@@ -99,36 +99,44 @@ const WindowSessionIndicator = new Lang.Class({
       icon_name: 'edit-delete-symbolic',
       style_class: 'popup-menu-icon-delete'
     });
-    _removeBtn.connect('clicked', Lang.bind(this, function () {
-      global.log('super', 'REMOVE');
+    _removeBtn.connect('clicked', Lang.bind(that, function () {
+      that._removeSession(fileName, function () {
+        that._refresh();
+      });
       return Clutter.EVENT_STOP;
     }));
     itemActor.add(_removeBtn, {
       x_align: St.Align.END,
     });
 
-    item.connect('activate', Lang.bind(this, function () {
-      this._restoreSession(fileName);
+    item.connect('activate', Lang.bind(that, function () {
+      that._restoreSession(fileName);
     }));
     return item;
   },
 
-  _saveSession: function (sessionName) {
-    this._execLwsm('save', sessionName);
+  _saveSession: function (sessionName, cb) {
+    this._execLwsm('save', sessionName, cb);
   },
 
-  _restoreSession: function (sessionName) {
-    this._execLwsm('restore', sessionName);
+  _restoreSession: function (sessionName, cb) {
+    this._execLwsm('restore', sessionName, cb);
   },
 
-  _execLwsm: function (action, sessionName) {
+  _removeSession: function (sessionName, cb) {
+    this._execLwsm('remove', sessionName, cb);
+  },
+
+  _execLwsm: function (action, sessionName, cb) {
     const that = this;
     this.statusLabel.set_text(action + ' "' + sessionName + '"');
-    let [success, pid] = GLib.spawn_async(null,
+    let [success, pid] = GLib.spawn_async(
+      null,
       [LWSM_CMD, action, sessionName],
       null,
       GLib.SpawnFlags.SEARCH_PATH | GLib.SpawnFlags.DO_NOT_REAP_CHILD,
-      null);
+      null
+    );
 
     if (!success) {
       that.statusLabel.set_text('ERROR');
@@ -136,10 +144,14 @@ const WindowSessionIndicator = new Lang.Class({
       GLib.child_watch_add(GLib.PRIORITY_DEFAULT, pid, function (pid, status) {
         GLib.spawn_close_pid(pid);
         if (status !== 0 && status !== '0') {
+          global.log('lwsm', action, sessionName, 'UNKNOWN ERROR');
           that.statusLabel.set_text('ERROR');
         }
         else {
           that.statusLabel.set_text(DEFAULT_INDICATOR_TEXT);
+          if (cb) {
+            cb();
+          }
         }
       });
     }
