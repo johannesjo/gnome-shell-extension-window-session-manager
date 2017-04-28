@@ -97,7 +97,7 @@ const WindowSessionIndicator = new Lang.Class({
   },
 
   _startSession: function (sessionName) {
-    // Util.spawnCommandLine(LWSM_CMD + ' restore ' + sessionName);
+    const that = this;
     //global.log('super Return Val', returnVal);
     this.statusLabel.set_text('loading "' + sessionName + '"');
 
@@ -109,21 +109,20 @@ const WindowSessionIndicator = new Lang.Class({
 
     if (!success) {
       global.log('super ERROR NO SUCCESS');
-      return;
+      that.statusLabel.set_text('ERROR');
+    } else {
+      GLib.child_watch_add(GLib.PRIORITY_DEFAULT, pid, function (pid, status) {
+        GLib.spawn_close_pid(pid);
+        if (status !== 0 && status !== '0') {
+          global.log('super ERROR');
+          that.statusLabel.set_text('ERROR');
+        }
+        else {
+          global.log('super SUCCESS', status);
+          that.statusLabel.set_text(sessionName);
+        }
+      });
     }
-
-    const that = this;
-    GLib.child_watch_add(GLib.PRIORITY_DEFAULT, pid, function (pid, status) {
-      GLib.spawn_close_pid(pid);
-
-      if (status !== 0 && status !== '0') {
-        global.log('super ERROR');
-      }
-      else {
-        global.log('super SUCCESS', status);
-        that.statusLabel.set_text(sessionName);
-      }
-    });
   }
 });
 
