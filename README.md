@@ -4,7 +4,7 @@ An indicator that let's you save and restore your open apps and the window posit
 
 Based on [lwsm](https://github.com/johannesjo/linux-window-session-manager).
 
-## Setup
+## setup
 Download or clone repository and move all files to `/home/your-user-name/.local/share/gnome-shell/extensions/lwsm@johannes.super-productivity.com`:
 
 ```
