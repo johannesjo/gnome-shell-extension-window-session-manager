@@ -15,9 +15,9 @@ git clone git@github.com:johannesjo/gnome-shell-extension-window-session-manager
 mv gnome-shell-extension-window-session-manager /home/$(whoami)/.local/share/gnome-shell/extensions/lwsm@johannes.super-productivity.com`
 ```
 
-# Usage
-After a successfull setup you should see an "screen" icon in at your status bar. Click on it to open the menu. To save your first window session click on the text input and enter a name for it. Click on the save icon to save it. 
+# usage
+After a successfull setup you should see an "screen" icon at your top bar. Click on it to open the menu. To save your first window session click on the text input and enter a name for it. Click on the save icon to save it. 
 
 After this can either restore a previously saved session by clicking on the play icon, delete them by clicking on the x icon or update them by clicking on the save icon. 
 
-The opened applications and windows are saved independently for each screen combination, which means that you can have a different set of applications and arrangements for each of them. 
+The opened applications and windows are saved independently for each screen combination, which means that you can have a different set of applications and arrangements for each of them and also need to save them indepdently. 
