@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schemalist gettext-domain="lwsm">
+    <schema path="/org/gnome/shell/extensions/lwsm/" id="org.gnome.shell.extensions.lwsm">
+        <key type="s" name="lwsmpath">
+            <default>''</default>
+            <summary>SUMMARY</summary>
+            <description>DES_DES</description>
+        </key>
+    </schema>
+</schemalist>

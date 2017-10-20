@@ -7,7 +7,8 @@ An indicator that let's you save and restore your open apps and the window posit
 Based on [lwsm](https://github.com/johannesjo/linux-window-session-manager).
 
 ## setup
-Download or clone repository and move all files to `/home/your-user-name/.local/share/gnome-shell/extensions/lwsm@johannes.super-productivity.com`:
+1. Install [lwsm](https://github.com/johannesjo/linux-window-session-manager) via npm: `npm install -g linux-window-session-manager`
+2. Download or clone repository and move all files to `/home/your-user-name/.local/share/gnome-shell/extensions/lwsm@johannes.super-productivity.com`:
 
 ```
 cd tmp

@@ -9,6 +9,10 @@ const Clutter = imports.gi.Clutter;
 const GLib = imports.gi.GLib;
 const Gio = imports.gi.Gio;
 
+const Me = imports.misc.extensionUtils.getCurrentExtension();
+const Lib = Me.imports.lib;
+const Gsettings = Lib.getSettings();
+
 const HOME_PATH = GLib.get_home_dir();
 const LWSM_PATH = HOME_PATH + '/.lwsm';
 const LWSM_CFG_FILE_PATH = HOME_PATH + '/.lwsm/config.json';
@@ -25,17 +29,22 @@ const WindowSessionIndicator = new Lang.Class({
     this.parent(0.0, 'Window Session Indicator', false);
     this._buildUi();
     this._refresh();
-    this._checkLwsmExecutable();
   },
 
-  _checkLwsmExecutable: function() {
+  _getLwsmExecutablePath: function() {
     let path;
-    const nodePath = GLib.find_program_in_path('node');
-    path = path || GLib.find_program_in_path('lwsm');
-    path = path || nodePath && nodePath.substring(0, nodePath.length - 4) + 'lwsm';
-    path = path || LWSM_DEFAULT_CMD;
-    this.lwsmCmd = path;
-    // this.statusLabel.set_text('X' + path);
+
+    path = Gsettings.get_string('lwsmpath');
+    path = path && path.trim();
+
+    if (!path) {
+      const nodePath = GLib.find_program_in_path('node');
+      path = path || GLib.find_program_in_path('lwsm');
+      path = path || nodePath && nodePath.substring(0, nodePath.length - 4) + 'lwsm';
+      path = path || LWSM_DEFAULT_CMD;
+    }
+
+    return path;
   },
 
   _buildUi: function() {
@@ -205,25 +214,30 @@ const WindowSessionIndicator = new Lang.Class({
 
   _execLwsm: function(action, sessionName, cb) {
     const that = this;
+
+    // update lwsm command from settings each time it is executed
+    const executable = this._getLwsmExecutablePath();
+    const argsv = [executable, action, sessionName];
+
     this.statusLabel.set_text(action + ' "' + sessionName + '"');
     let [success, pid] = GLib.spawn_async(
       null,
-      [this.lwsmCmd, action, sessionName],
+      argsv,
       null,
-      GLib.SpawnFlags.SEARCH_PATH | GLib.SpawnFlags.DO_NOT_REAP_CHILD,
+      GLib.SpawnFlags.DO_NOT_REAP_CHILD,
       null
     );
 
     if (!success) {
       that.statusLabel.set_text('ERROR');
+      that.statusLabel.set_text(success + '#' + pid);
     } else {
       GLib.child_watch_add(GLib.PRIORITY_DEFAULT, pid, function(pid, status) {
         GLib.spawn_close_pid(pid);
         if (status !== 0 && status !== '0') {
           that.statusLabel.set_text('ERROR');
           global.log('lwsm', action, sessionName, 'UNKNOWN ERROR');
-        }
-        else {
+        } else {
           that.statusLabel.set_text(DEFAULT_INDICATOR_TEXT);
           if (cb) {
             cb();
