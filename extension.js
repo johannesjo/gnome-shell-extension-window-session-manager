@@ -217,25 +217,29 @@ const WindowSessionIndicator = new Lang.Class({
 
     // update lwsm command from settings each time it is executed
     const executable = this._getLwsmExecutablePath();
-    const argsv = [executable, action, sessionName];
+
+    if (!GLib.file_test(executable, GLib.FileTest.EXISTS)) {
+      that.statusLabel.set_text('ERR: No lwsm executable');
+      return;
+    }
 
     this.statusLabel.set_text(action + ' "' + sessionName + '"');
     let [success, pid] = GLib.spawn_async(
       null,
-      argsv,
+      [executable, action, sessionName],
       null,
       GLib.SpawnFlags.DO_NOT_REAP_CHILD,
       null
     );
 
     if (!success) {
-      that.statusLabel.set_text('ERROR');
+      that.statusLabel.set_text('ERR');
       that.statusLabel.set_text(success + '#' + pid);
     } else {
       GLib.child_watch_add(GLib.PRIORITY_DEFAULT, pid, function(pid, status) {
         GLib.spawn_close_pid(pid);
         if (status !== 0 && status !== '0') {
-          that.statusLabel.set_text('ERROR');
+          that.statusLabel.set_text('ERR');
           global.log('lwsm', action, sessionName, 'UNKNOWN ERROR');
         } else {
           that.statusLabel.set_text(DEFAULT_INDICATOR_TEXT);
