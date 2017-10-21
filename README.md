@@ -2,6 +2,8 @@
 
 An indicator that let's you save and restore your open apps and the window positions and arrangements over multiple real and virtual displays.
 
+[Check it out on extensions.gnome.org](https://extensions.gnome.org/extension/1323/window-session-manager/)
+
 ![Screenshot](/screenshot.png "Screenshot")
 
 Based on [lwsm](https://github.com/johannesjo/linux-window-session-manager).
@@ -9,6 +11,7 @@ Based on [lwsm](https://github.com/johannesjo/linux-window-session-manager).
 ## setup
 1. Install [lwsm](https://github.com/johannesjo/linux-window-session-manager) via npm: `npm install -g linux-window-session-manager`
 2. Download or clone repository and move all files to `/home/your-user-name/.local/share/gnome-shell/extensions/lwsm@johannes.super-productivity.com`:
+3. In some cases - especially when you're using nvm, you might need to configure the path to your lwsm installation (which you can find out via `which lwsm` after a successful installation) extension via `gnome-shell-extension-prefs`. 
 
 ```
 cd tmp
