@@ -205,6 +205,7 @@ const WindowSessionIndicator = new Lang.Class({
   },
 
   _restoreSession: function(sessionName, cb) {
+    this.lastSession = sessionName;
     this._execLwsm('restore', sessionName, cb);
   },
 
