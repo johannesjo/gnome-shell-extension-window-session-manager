@@ -1,12 +1,20 @@
 {
   "uuid": "lwsm@johannes.super-productivity.com",
   "shell-version": [
-    "3.18.5"
+    "3.18",
+    "3.19",
+    "3.20",
+    "3.22",
+    "3.23",
+    "3.24",
+    "3.25",
+    "3.26",
+    "3.27"
   ],
   "name": "Window Session Manager",
   "description": "An indicator that let's you save and restore your open apps and the window positions and arrangements over multiple real and virtual displays. Requires lwsm to be installed (`npm install -g linux-window-session-manager`).",
   "settings-schema": "org.gnome.shell.extensions.lwsm",
   "gettext-domain": "lwsm",
-  "version": 2,
+  "version": 3,
   "url" : "https://github.com/johannesjo/gnome-shell-extension-window-session-manager"
 }
