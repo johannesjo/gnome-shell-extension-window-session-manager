@@ -15,11 +15,12 @@ const Gsettings = Lib.getSettings();
 
 const HOME_PATH = GLib.get_home_dir();
 const LWSM_PATH = HOME_PATH + '/.lwsm';
-const LWSM_CFG_FILE_PATH = HOME_PATH + '/.lwsm/config.json';
 const LWSM_SESSION_PATH = LWSM_PATH + '/sessionData';
-const LWSM_CMD = HOME_PATH + '/.local/share/gnome-shell/extensions/lwsm@johannes.super-productivity.com/lwsm';
 const LWSM_DEFAULT_CMD = '~/bin/lwsm';
 const DEFAULT_INDICATOR_TEXT = '';
+//const APP_DIR = GLib.build_filenamev([global.userdatadir, 'extensions/mylauncher@markbokil.com']);
+const APP_DIR = HOME_PATH + '/.local/share/gnome-shell/extensions/lwsm@johannes.super-productivity.com/';
+const SETUP_SH_PATH = APP_DIR + 'setup-lwsm.sh';
 
 const WindowSessionIndicator = new Lang.Class({
   Name: 'WindowSessionIndicator',
@@ -280,6 +281,17 @@ function init() {
 }
 
 function enable() {
+  function _runCmd(cmd) {
+    try {
+      Main.Util.trySpawnCommandLine(cmd);
+    } catch (e) {
+      Main.notify(e.toString());
+      global.log(e.toString());
+    }
+  }
+
+  _runCmd('sh ' + SETUP_SH_PATH);
+
   wsMenu = new WindowSessionIndicator;
   Main.panel.addToStatusArea('ws-indicator', wsMenu);
 }
