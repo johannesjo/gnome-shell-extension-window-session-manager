@@ -222,10 +222,14 @@ const WindowSessionIndicator = new Lang.Class({
 
     if (!GLib.file_test(executable, GLib.FileTest.EXISTS)) {
       that.statusLabel.set_text('ERR: No lwsm executable');
+      Main.notify('lwsm: ERR: No lwsm executable', 'Please use the extension settings to point to a valid executable path."');
       return;
     }
 
-    this.statusLabel.set_text(action + ' "' + sessionName + '"');
+    const msg = action + ' "' + sessionName + '"';
+    this.statusLabel.set_text(msg);
+    Main.notify('lwsm: ' + msg);
+
     let [success, pid] = GLib.spawn_async(
       null,
       [executable, action, sessionName],
@@ -243,6 +247,7 @@ const WindowSessionIndicator = new Lang.Class({
         if (status !== 0 && status !== '0') {
           that.statusLabel.set_text('ERR');
           global.log('lwsm', action, sessionName, 'UNKNOWN ERROR');
+          Main.notify('lwsm: ' + action + ' ' + sessionName + ' UNKNOWN ERROR');
         } else {
           that.statusLabel.set_text(DEFAULT_INDICATOR_TEXT);
           if (cb) {
