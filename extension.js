@@ -68,14 +68,14 @@ const WindowSessionIndicator = new Lang.Class({
 
     // read files
     this.fileList = [];
-    const enumeratedChildren = this.lwsmSessionDir.enumerate_children('*', 0, null, null);
+    const enumeratedChildren = this.lwsmSessionDir.enumerate_children('*', 0, null);
     let fileInfo;
-    while ((fileInfo = enumeratedChildren.next_file(null, null)) !== null) {
+    while ((fileInfo = enumeratedChildren.next_file(null)) !== null) {
       if (!fileInfo.get_is_hidden() && !isDirectory(fileInfo)) {
         this.fileList.push(fileInfo);
       }
     }
-    enumeratedChildren.close(null, null);
+    enumeratedChildren.close(null);
 
     // if nothing changed don't refresh menu
     if (this.fileListBefore && this.fileListBefore.length === this.fileList.length) {
