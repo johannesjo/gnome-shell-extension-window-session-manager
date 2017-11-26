@@ -8,6 +8,7 @@ const Clutter = imports.gi.Clutter;
 //const Extension = ExtensionUtils.getCurrentExtension();
 const GLib = imports.gi.GLib;
 const Gio = imports.gi.Gio;
+const Util = imports.misc.util;
 
 const Me = imports.misc.extensionUtils.getCurrentExtension();
 const Lib = Me.imports.lib;
@@ -18,8 +19,9 @@ const LWSM_PATH = HOME_PATH + '/.lwsm';
 const LWSM_SESSION_PATH = LWSM_PATH + '/sessionData';
 const LWSM_DEFAULT_CMD = '~/bin/lwsm';
 const DEFAULT_INDICATOR_TEXT = '';
-//const APP_DIR = GLib.build_filenamev([global.userdatadir, 'extensions/mylauncher@markbokil.com']);
+const APP_ID = 'lwsm@johannes.super-productivity.com';
 const APP_DIR = HOME_PATH + '/.local/share/gnome-shell/extensions/lwsm@johannes.super-productivity.com/';
+
 const SETUP_SH_PATH = APP_DIR + 'setup-lwsm.sh';
 
 const WindowSessionIndicator = new Lang.Class({
@@ -30,6 +32,9 @@ const WindowSessionIndicator = new Lang.Class({
     this.parent(0.0, 'Window Session Indicator', false);
     this._buildUi();
     this._refresh();
+    if (!this._getLwsmExecutablePath()) {
+      this._openSettings();
+    }
   },
 
   _getLwsmExecutablePath: function() {
@@ -95,8 +100,13 @@ const WindowSessionIndicator = new Lang.Class({
     this.fileList.forEach(Lang.bind(this, function(file) {
       that._sessionSection.addMenuItem(this._createMenuItem(file));
     }));
-    that._sessionSection.addMenuItem(this._createNewSessionItem())
+    that._sessionSection.addMenuItem(this._createNewSessionItem());
     this.fileListBefore = this.fileList;
+  },
+
+  _openSettings: function() {
+    Util.spawn(['gnome-shell-extension-prefs', APP_ID]);
+    return 0;
   },
 
   _createNewSessionItem: function() {
@@ -140,7 +150,8 @@ const WindowSessionIndicator = new Lang.Class({
     itemActor.add(_saveBtn);
 
     return item;
-  },
+  }
+  ,
 
   _createMenuItem: function(fileInfo) {
     const fileName = fileInfo.get_display_name().replace('.json', '');
@@ -199,20 +210,24 @@ const WindowSessionIndicator = new Lang.Class({
       that._restoreSession(fileName);
     }));
     return item;
-  },
+  }
+  ,
 
   _saveSession: function(sessionName, cb) {
     this._execLwsm('save', sessionName, cb);
-  },
+  }
+  ,
 
   _restoreSession: function(sessionName, cb) {
     this.lastSession = sessionName;
     this._execLwsm('restore', sessionName, cb);
-  },
+  }
+  ,
 
   _removeSession: function(sessionName, cb) {
     this._execLwsm('remove', sessionName, cb);
-  },
+  }
+  ,
 
   _execLwsm: function(action, sessionName, cb) {
     const that = this;
@@ -256,21 +271,24 @@ const WindowSessionIndicator = new Lang.Class({
         }
       });
     }
-  },
+  }
+  ,
 
   _refresh: function() {
     this._createMenu();
     this._removeTimeout();
     this._timeout = Mainloop.timeout_add_seconds(10, Lang.bind(this, this._refresh));
     return true;
-  },
+  }
+  ,
 
   _removeTimeout: function() {
     if (this._timeout) {
       Mainloop.source_remove(this._timeout);
       this._timeout = null;
     }
-  },
+  }
+  ,
   stop: function() {
     if (this._timeout) {
       Mainloop.source_remove(this._timeout);
@@ -286,16 +304,9 @@ function init() {
 }
 
 function enable() {
-  function _runCmd(cmd) {
-    try {
-      Main.Util.trySpawnCommandLine(cmd);
-    } catch (e) {
-      Main.notify(e.toString());
-      global.log(e.toString());
-    }
-  }
-
-  _runCmd('sh ' + SETUP_SH_PATH);
+  // createRequiredDirectories();
+  Util.spawn(['mkdir', '~/.lwsm']);
+  Util.spawn(['mkdir', '~/.lwsm/']);
 
   wsMenu = new WindowSessionIndicator;
   Main.panel.addToStatusArea('ws-indicator', wsMenu);

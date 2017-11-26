@@ -76,10 +76,10 @@ const SettingsBox = new GObject.Class({
 
     let widget;
 
-    if (Settings[setting].type == 's') {
+    if (Settings[setting].type === 's') {
       widget = new SettingsEntry(setting);
     }
-    if (Settings[setting].type == "b") {
+    if (Settings[setting].type === 'b') {
       widget = new SettingsSwitch(setting);
     }
 
@@ -122,7 +122,7 @@ const SettingsEntry = new GObject.Class({
     this.parent({
       valign: Gtk.Align.CENTER,
       halign: Gtk.Align.END,
-      width_chars: 30,
+      width_chars: 60,
       text: text
     });
 
@@ -153,12 +153,12 @@ const PrefsWidget = new GObject.Class({
       border_width: 10, margin: 20
     });
     const introText = new Gtk.Label({
-      label: 'If not done already you need to manually install lwsm globally via npm (nodejs needs to be installed). you can run `npm install -g lwsm` from your command line to do so.',
+      label: 'If not done already you need to manually install lwsm globally via npm (nodejs needs to be installed). you can run: \n\nnpm install -g lwsm\n\nfrom your command line to do so. After installation you can check the path via: \n\nwhich lwsm',
       xalign: 0,
-      wrap: true
+      wrap: true,
     });
 
-    this.pack_start(introText, false, false, 0);
+    this.pack_start(introText, false, false, 20);
 
     frame.show_all();
 
@@ -166,13 +166,14 @@ const PrefsWidget = new GObject.Class({
 
     for (let setting in Settings) {
       settingsBox = new SettingsBox(setting);
-
-      if (Gtk.get_minor_version() < 20 && setting == "hide-stockmpris") {
-        settingsBox.set_sensitive(false);
-      }
-
-      this.pack_start(settingsBox, false, false, 0);
+      this.pack_start(settingsBox, false, false, 20);
     }
+
+    const linkBtn = new Gtk.LinkButton({
+      uri: 'https://github.com/johannesjo/gnome-shell-extension-window-session-manager',
+      label: 'For more information and help check out the github page'
+    });
+    this.pack_end(linkBtn, false, false, 20);
   }
 });
 
@@ -186,3 +187,16 @@ function buildPrefsWidget() {
   widget.show_all();
   return widget;
 }
+
+// NOTE: Maybe later we add this
+// function installDependencies() {
+//  function _runCmd(cmd) {
+//    try {
+//      Main.Util.trySpawnCommandLine(cmd);
+//    } catch (e) {
+//      Main.notify(e.toString());
+//      global.log(e.toString());
+//    }
+//  }
+//  _runCmd('sh ' + SETUP_SH_PATH);
+//}
