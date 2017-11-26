@@ -32,9 +32,27 @@ const WindowSessionIndicator = new Lang.Class({
     this.parent(0.0, 'Window Session Indicator', false);
     this._buildUi();
     this._refresh();
-    if (!this._getLwsmExecutablePath()) {
+    this._checkLwsmExecutable(true);
+  },
+
+  _checkLwsmExecutable: function(isInitialCheck) {
+    // check for executable
+    const executablePath = this._getLwsmExecutablePath();
+    if (!executablePath || !GLib.file_test(executablePath, GLib.FileTest.EXISTS)) {
+      Main.notify('lwsm: ERROR: No lwsm executable', 'Please use the extension settings to point to a valid executable path.');
+      if (!isInitialCheck) {
+        that.statusLabel.set_text('ERR: No lwsm executable');
+      }
       this._openSettings();
+      return false;
     }
+
+    return true;
+  },
+
+  _guessExecutableViaNodePath: function() {
+    const nodePath = GLib.find_program_in_path('node');
+    return nodePath && nodePath.substring(0, nodePath.length - 4) + 'lwsm'
   },
 
   _getLwsmExecutablePath: function() {
@@ -44,9 +62,8 @@ const WindowSessionIndicator = new Lang.Class({
     path = path && path.trim();
 
     if (!path) {
-      const nodePath = GLib.find_program_in_path('node');
       path = path || GLib.find_program_in_path('lwsm');
-      path = path || nodePath && nodePath.substring(0, nodePath.length - 4) + 'lwsm';
+      path = path || this._guessExecutableViaNodePath();
       path = path || LWSM_DEFAULT_CMD;
     }
 
@@ -235,9 +252,7 @@ const WindowSessionIndicator = new Lang.Class({
     // update lwsm command from settings each time it is executed
     const executable = this._getLwsmExecutablePath();
 
-    if (!GLib.file_test(executable, GLib.FileTest.EXISTS)) {
-      that.statusLabel.set_text('ERR: No lwsm executable');
-      Main.notify('lwsm: ERR: No lwsm executable', 'Please use the extension settings to point to a valid executable path."');
+    if (!that._checkLwsmExecutable()) {
       return;
     }
 
@@ -304,9 +319,9 @@ function init() {
 }
 
 function enable() {
-  // createRequiredDirectories();
-  Util.spawn(['mkdir', '~/.lwsm']);
-  Util.spawn(['mkdir', '~/.lwsm/']);
+  // try to create required directories if not existent already
+  Util.spawn(['mkdir', LWSM_PATH]);
+  Util.spawn(['mkdir', LWSM_SESSION_PATH]);
 
   wsMenu = new WindowSessionIndicator;
   Main.panel.addToStatusArea('ws-indicator', wsMenu);
