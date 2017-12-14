@@ -9,9 +9,10 @@ An indicator that let's you save and restore your open apps and the window posit
 Based on [lwsm](https://github.com/johannesjo/linux-window-session-manager).
 
 ## setup
-1. Install [lwsm](https://github.com/johannesjo/linux-window-session-manager) via npm: `npm install -g linux-window-session-manager` (on some systems you might want to use `sudo`)
-2. Download or clone repository and move all files to `/home/your-user-name/.local/share/gnome-shell/extensions/lwsm@johannes.super-productivity.com`:
-3. In some cases - especially when you're using nvm, you might need to configure the path to your lwsm installation (which you can find out via `which lwsm` after a successful installation) extension via `gnome-shell-extension-prefs`. 
+1. Make sure you have nodejs installed (e.g. execute `node -v` and if there is no output [install it](https://nodejs.org/en/download/package-manager/)). 
+2. Install [lwsm](https://github.com/johannesjo/linux-window-session-manager) via npm: `npm install -g linux-window-session-manager` (on some systems you might want to use `sudo`)
+3. Download or clone repository and move all files to `/home/your-user-name/.local/share/gnome-shell/extensions/lwsm@johannes.super-productivity.com`:
+4. In some cases - especially when you're using nvm, you might need to configure the path to your lwsm installation (which you can find out via `which lwsm` after a successful installation) extension via `gnome-shell-extension-prefs`. 
 
 ```
 cd tmp
