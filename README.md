@@ -28,4 +28,4 @@ After this can either restore a previously saved session by clicking on the play
 The opened applications and windows are saved independently for each screen combination, which means that you can have a different set of applications and arrangements for each of them and also need to save them indepdently. 
 
 # troubleshooting
-Have a look at the [troubleshooting section on the lwsm page](https://github.com/johannesjo/linux-window-session-manager).
+Have a look at the [troubleshooting section on the lwsm page](https://github.com/johannesjo/linux-window-session-manager#troubleshooting--issues).
