@@ -15,7 +15,7 @@ const Lib = Me.imports.lib;
 const Gsettings = Lib.getSettings();
 
 const HOME_PATH = GLib.get_home_dir();
-const LWSM_PATH = HOME_PATH + '/.lwsm';
+const LWSM_PATH = HOME_PATH + '/.config/lwsm';
 const LWSM_SESSION_PATH = LWSM_PATH + '/sessionData';
 const LWSM_DEFAULT_CMD = '~/bin/lwsm';
 const DEFAULT_INDICATOR_TEXT = '';
