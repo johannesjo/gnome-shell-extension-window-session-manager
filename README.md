@@ -17,7 +17,7 @@ Based on [lwsm](https://github.com/johannesjo/linux-window-session-manager).
 ```
 cd tmp
 git clone git@github.com:johannesjo/gnome-shell-extension-window-session-manager.git
-mv gnome-shell-extension-window-session-manager /home/$(whoami)/.local/share/gnome-shell/extensions/lwsm@johannes.super-productivity.com`
+mv gnome-shell-extension-window-session-manager /home/$(whoami)/.local/share/gnome-shell/extensions/lwsm@johannes.super-productivity.com
 ```
 
 # usage
