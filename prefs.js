@@ -153,7 +153,7 @@ const PrefsWidget = new GObject.Class({
       border_width: 10, margin: 20
     });
     const introText = new Gtk.Label({
-      label: 'If not done already you need to manually install lwsm globally via npm (nodejs needs to be installed). you can run: \n\nnpm install -g lwsm\n\nfrom your command line to do so. After installation you can check the path via: \n\nwhich lwsm',
+      label: 'If not done already you need to manually install lwsm globally via npm (nodejs needs to be installed). you can run: \n\nnpm install -g linux-window-session-manager\n\nfrom your command line to do so. After installation you can check the path via: \n\nwhich lwsm',
       xalign: 0,
       wrap: true,
     });
