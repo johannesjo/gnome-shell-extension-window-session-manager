@@ -23,7 +23,6 @@ const APP_ID = 'lwsm@johannes.super-productivity.com';
 const APP_DIR = HOME_PATH + '/.local/share/gnome-shell/extensions/lwsm@johannes.super-productivity.com/';
 
 const SETUP_SH_PATH = APP_DIR + 'setup-lwsm.sh';
-
 const WindowSessionIndicator = new Lang.Class({
   Name: 'WindowSessionIndicator',
   Extends: PanelMenu.Button,
@@ -73,14 +72,15 @@ const WindowSessionIndicator = new Lang.Class({
   _buildUi: function() {
     this.statusLabel = new St.Label({
       y_align: Clutter.ActorAlign.CENTER,
-      text: DEFAULT_INDICATOR_TEXT
+      text: DEFAULT_INDICATOR_TEXT,
+      y_expand: true,
     });
     this.statusLabel.add_style_class_name('window-session-indicator-label');
 
     let topBox = new St.BoxLayout();
     //topBox.add_actor(button);
     topBox.add_actor(this.statusLabel);
-    this.actor.add_actor(topBox);
+    this.add_actor(topBox);
     topBox.add_style_class_name('window-session-indicator');
 
   },
@@ -108,7 +108,6 @@ const WindowSessionIndicator = new Lang.Class({
     if (this._sessionSection) {
       this._sessionSection.removeAll();
     }
-
     // create new session section and menu
     this._sessionSection = new PopupMenu.PopupMenuSection();
     this.menu.addMenuItem(this._sessionSection);
@@ -142,17 +141,16 @@ const WindowSessionIndicator = new Lang.Class({
       track_hover: true,
       reactive: true,
       can_focus: true,
+      x_expand: true,
     });
-    itemActor.add(input, {
-      expand: true
-    });
+    itemActor.add(input);
 
     // add save button
     let _saveBtn = new St.Button({
       reactive: true,
       can_focus: true,
-      x_fill: true,
       style_class: 'button-save',
+      x_align: St.Align.END,
     });
     _saveBtn.child = new St.Icon({
       icon_name: 'document-save-symbolic',
@@ -175,20 +173,18 @@ const WindowSessionIndicator = new Lang.Class({
     const item = new PopupMenu.PopupMenuItem('');
     const itemActor = item.actor;
     const that = this;
-
-    // add main session label and icon
-    itemActor.add(new St.Icon({
+    
+   itemActor.add(new St.Icon({
       icon_name: 'media-playback-start-symbolic',
       style_class: 'popup-menu-icon-play',
     }));
-    itemActor.add(new St.Label({ text: fileName }), { expand: true });
+    itemActor.add(new St.Label({ text: fileName, y_expand: true }));
 
     // add save button
     let _saveBtn = new St.Button({
       style_class: 'button-save',
       reactive: true,
       can_focus: true,
-      x_fill: true,
     });
     _saveBtn.child = new St.Icon({
       icon_name: 'document-save-symbolic',
@@ -198,16 +194,13 @@ const WindowSessionIndicator = new Lang.Class({
       that._saveSession(fileName);
       return Clutter.EVENT_STOP;
     }));
-    itemActor.add(_saveBtn, {
-      x_align: St.Align.END,
-    });
+    itemActor.add(_saveBtn);
 
     // add remove button
     let _removeBtn = new St.Button({
       style_class: 'button-delete',
       reactive: true,
       can_focus: true,
-      x_fill: true,
     });
     _removeBtn.child = new St.Icon({
       icon_name: 'edit-delete-symbolic',
@@ -220,7 +213,6 @@ const WindowSessionIndicator = new Lang.Class({
       return Clutter.EVENT_STOP;
     }));
     itemActor.add(_removeBtn, {
-      x_align: St.Align.END,
     });
 
     item.connect('activate', Lang.bind(that, function() {
@@ -322,7 +314,6 @@ function enable() {
   // try to create required directories if not existent already
   Util.spawn(['mkdir', LWSM_PATH]);
   Util.spawn(['mkdir', LWSM_SESSION_PATH]);
-
   wsMenu = new WindowSessionIndicator;
   Main.panel.addToStatusArea('ws-indicator', wsMenu);
 }
