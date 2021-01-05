@@ -9,12 +9,14 @@
     "3.24",
     "3.25",
     "3.26",
-    "3.27"
+    "3.27",
+    "3.36",
+    "3.38"
   ],
   "name": "Window Session Manager",
   "description": "An indicator that let's you save and restore your open apps and the window positions and arrangements over multiple real and virtual displays. Requires lwsm and nodejs to be installed (`npm install -g linux-window-session-manager`).",
   "settings-schema": "org.gnome.shell.extensions.lwsm",
   "gettext-domain": "lwsm",
-  "version": 5,
+  "version": 6,
   "url" : "https://github.com/johannesjo/gnome-shell-extension-window-session-manager"
 }
