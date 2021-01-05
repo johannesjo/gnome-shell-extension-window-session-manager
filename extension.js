@@ -77,7 +77,7 @@ const WindowSessionIndicator = new Lang.Class({
     });
     this.statusLabel.add_style_class_name('window-session-indicator-label');
 
-    let topBox = new St.BoxLayout();
+    let topBox = new St.BoxLayout({ x_expand: true, y_expand: true });
     //topBox.add_actor(button);
     topBox.add_actor(this.statusLabel);
     this.add_actor(topBox);
@@ -173,7 +173,7 @@ const WindowSessionIndicator = new Lang.Class({
     const item = new PopupMenu.PopupMenuItem('');
     const itemActor = item.actor;
     const that = this;
-    
+
    itemActor.add(new St.Icon({
       icon_name: 'media-playback-start-symbolic',
       style_class: 'popup-menu-icon-play',
