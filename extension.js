@@ -14,6 +14,7 @@ const Me = imports.misc.extensionUtils.getCurrentExtension();
 const Lib = Me.imports.lib;
 const Gsettings = Lib.getSettings();
 
+const AUTO_RESTORE_DELAY = 5000; // in ms
 const HOME_PATH = GLib.get_home_dir();
 const LWSM_PATH = HOME_PATH + '/.config/lwsm';
 const LWSM_SESSION_PATH = LWSM_PATH + '/sessionData';
@@ -77,7 +78,7 @@ const WindowSessionIndicator = new Lang.Class({
     });
     this.statusLabel.add_style_class_name('window-session-indicator-label');
 
-    let topBox = new St.BoxLayout();
+    let topBox = new St.BoxLayout({ x_expand: true, y_expand: true, });
     //topBox.add_actor(button);
     topBox.add_actor(this.statusLabel);
     this.add_actor(topBox);
@@ -173,7 +174,7 @@ const WindowSessionIndicator = new Lang.Class({
     const item = new PopupMenu.PopupMenuItem('');
     const itemActor = item.actor;
     const that = this;
-    
+
    itemActor.add(new St.Icon({
       icon_name: 'media-playback-start-symbolic',
       style_class: 'popup-menu-icon-play',
@@ -308,14 +309,21 @@ const WindowSessionIndicator = new Lang.Class({
 let wsMenu;
 
 function init() {
-}
-
-function enable() {
   // try to create required directories if not existent already
   Util.spawn(['mkdir', LWSM_PATH]);
   Util.spawn(['mkdir', LWSM_SESSION_PATH]);
   wsMenu = new WindowSessionIndicator;
   Main.panel.addToStatusArea('ws-indicator', wsMenu);
+
+  // restore DEFAULT session
+  if (Gsettings.get_boolean('auto-restore-enabled')) {
+    setTimeout(function () {
+      wsMenu._restoreSession(Gsettings.get_string('auto-restore-session-name'));
+    }, AUTO_RESTORE_DELAY);
+  }
+}
+
+function enable() {
 }
 
 function disable() {
@@ -327,4 +335,8 @@ function disable() {
 // ------
 function isDirectory(file) {
   return Gio.FileType.DIRECTORY === file.get_file_type();
+}
+
+function setTimeout (fn, ms) {
+  return Mainloop.timeout_add(ms, fn);
 }
