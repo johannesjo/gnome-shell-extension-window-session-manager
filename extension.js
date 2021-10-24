@@ -78,7 +78,7 @@ const WindowSessionIndicator = new Lang.Class({
     });
     this.statusLabel.add_style_class_name('window-session-indicator-label');
 
-    let topBox = new St.BoxLayout({ x_expand: true, y_expand: true, });
+    let topBox = new St.BoxLayout({ x_expand: true, y_expand: true });
     //topBox.add_actor(button);
     topBox.add_actor(this.statusLabel);
     this.add_actor(topBox);
