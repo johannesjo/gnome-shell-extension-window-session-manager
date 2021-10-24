@@ -6,5 +6,15 @@
             <summary>SUMMARY</summary>
             <description>DES_DES</description>
         </key>
+        <key type="b" name="auto-restore-enabled">
+            <default>false</default>
+            <summary>Do you want your session to be auto restored?</summary>
+            <description>Attempts to restore session</description>
+        </key>
+        <key type="s" name="auto-restore-session-name">
+            <default>'DEFAULT'</default>
+            <summary>The session name to restore</summary>
+            <description>DES_DES</description>
+        </key>
     </schema>
 </schemalist>

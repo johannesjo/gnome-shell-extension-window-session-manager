@@ -19,6 +19,17 @@ const Settings = {
     label: _("Path to lwsm"),
     help: _("Please enter the full path to the lwsm executable")
   },
+  'auto-restore-enabled': {
+    type: "b",
+    tab: "i",
+    label: _("Do you want your session to be auto restored?"),
+  },
+  'auto-restore-session-name': {
+    type: "s",
+    tab: "i",
+    placeholder_text: 'DEFAULT',
+    label: _("Which session name do you want to auto restore?"),
+  },
 };
 
 const Frame = new GObject.Class({
