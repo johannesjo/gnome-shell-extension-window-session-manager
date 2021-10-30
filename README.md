@@ -2,7 +2,7 @@
 
 An indicator that let's you save and restore your open apps and the window positions and arrangements over multiple real and virtual displays.
 
-[Check it out on extensions.gnome.org](https://extensions.gnome.org/extension/1323/window-session-manager/)
+[~~Check it out on extensions.gnome.org~~](https://extensions.gnome.org/extension/1323/window-session-manager/)
 
 ![Screenshot](/screenshot.png "Screenshot")
 
