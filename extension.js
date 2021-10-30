@@ -1,3 +1,4 @@
+const GObject = imports.gi.GObject;
 const St = imports.gi.St;
 const Main = imports.ui.main;
 const Mainloop = imports.mainloop;
@@ -24,18 +25,15 @@ const APP_ID = 'lwsm@johannes.super-productivity.com';
 const APP_DIR = HOME_PATH + '/.local/share/gnome-shell/extensions/lwsm@johannes.super-productivity.com/';
 
 const SETUP_SH_PATH = APP_DIR + 'setup-lwsm.sh';
-const WindowSessionIndicator = new Lang.Class({
-  Name: 'WindowSessionIndicator',
-  Extends: PanelMenu.Button,
-
-  _init: function() {
-    this.parent(0.0, 'Window Session Indicator', false);
+const WindowSessionIndicator = GObject.registerClass(class WindowSessionIndicator extends PanelMenu.Button {
+  _init() {
+    super._init(0.0, 'Window Session Indicator', false);
     this._buildUi();
     this._refresh();
     this._checkLwsmExecutable(true);
-  },
+  }
 
-  _checkLwsmExecutable: function(isInitialCheck) {
+  _checkLwsmExecutable(isInitialCheck) {
     // check for executable
     const executablePath = this._getLwsmExecutablePath();
     if (!executablePath || !GLib.file_test(executablePath, GLib.FileTest.EXISTS)) {
@@ -48,14 +46,14 @@ const WindowSessionIndicator = new Lang.Class({
     }
 
     return true;
-  },
+  }
 
-  _guessExecutableViaNodePath: function() {
+  _guessExecutableViaNodePath() {
     const nodePath = GLib.find_program_in_path('node');
     return nodePath && nodePath.substring(0, nodePath.length - 4) + 'lwsm'
-  },
+  }
 
-  _getLwsmExecutablePath: function() {
+  _getLwsmExecutablePath() {
     let path;
 
     path = Gsettings.get_string('lwsmpath');
@@ -68,9 +66,9 @@ const WindowSessionIndicator = new Lang.Class({
     }
 
     return path;
-  },
+  }
 
-  _buildUi: function() {
+  _buildUi() {
     this.statusLabel = new St.Label({
       y_align: Clutter.ActorAlign.CENTER,
       text: DEFAULT_INDICATOR_TEXT,
@@ -84,9 +82,9 @@ const WindowSessionIndicator = new Lang.Class({
     this.add_actor(topBox);
     topBox.add_style_class_name('window-session-indicator');
 
-  },
+  }
 
-  _createMenu: function() {
+  _createMenu() {
     this.lwsmSessionDir = Gio.file_new_for_path(LWSM_SESSION_PATH);
 
     // read files
@@ -119,14 +117,14 @@ const WindowSessionIndicator = new Lang.Class({
     }));
     that._sessionSection.addMenuItem(this._createNewSessionItem());
     this.fileListBefore = this.fileList;
-  },
+  }
 
-  _openSettings: function() {
+  _openSettings() {
     Util.spawn(['gnome-shell-extension-prefs', APP_ID]);
     return 0;
-  },
+  }
 
-  _createNewSessionItem: function() {
+  _createNewSessionItem() {
     const that = this;
     const item = new PopupMenu.PopupMenuItem('', {
       activate: false,
@@ -167,9 +165,8 @@ const WindowSessionIndicator = new Lang.Class({
 
     return item;
   }
-  ,
 
-  _createMenuItem: function(fileInfo) {
+  _createMenuItem(fileInfo) {
     const fileName = fileInfo.get_display_name().replace('.json', '');
     const item = new PopupMenu.PopupMenuItem('');
     const itemActor = item.actor;
@@ -221,25 +218,21 @@ const WindowSessionIndicator = new Lang.Class({
     }));
     return item;
   }
-  ,
 
-  _saveSession: function(sessionName, cb) {
+  _saveSession(sessionName, cb) {
     this._execLwsm('save', sessionName, cb);
   }
-  ,
 
-  _restoreSession: function(sessionName, cb) {
+  _restoreSession(sessionName, cb) {
     this.lastSession = sessionName;
     this._execLwsm('restore', sessionName, cb);
   }
-  ,
 
-  _removeSession: function(sessionName, cb) {
+  _removeSession(sessionName, cb) {
     this._execLwsm('remove', sessionName, cb);
   }
-  ,
 
-  _execLwsm: function(action, sessionName, cb) {
+  _execLwsm(action, sessionName, cb) {
     const that = this;
 
     // update lwsm command from settings each time it is executed
@@ -280,30 +273,28 @@ const WindowSessionIndicator = new Lang.Class({
       });
     }
   }
-  ,
 
-  _refresh: function() {
+  _refresh() {
     this._createMenu();
     this._removeTimeout();
     this._timeout = Mainloop.timeout_add_seconds(10, Lang.bind(this, this._refresh));
     return true;
   }
-  ,
 
-  _removeTimeout: function() {
+  _removeTimeout() {
     if (this._timeout) {
       Mainloop.source_remove(this._timeout);
       this._timeout = null;
     }
   }
-  ,
-  stop: function() {
+
+  stop() {
     if (this._timeout) {
       Mainloop.source_remove(this._timeout);
     }
     this._timeout = undefined;
     this.menu.removeAll();
-  },
+  }
 });
 
 let wsMenu;
