@@ -11,6 +11,27 @@ const Me = imports.misc.extensionUtils.getCurrentExtension();
 const Lib = Me.imports.lib;
 const Gsettings = Lib.getSettings(Me);
 
+// Add a child to a box, in either Gtk3 or Gtk4
+function safe_append(box, child, expand, padding, end) {
+  let horiz = (box.orientation == Gtk.Orientation.HORIZONTAL);
+  if (end) {
+    child[horiz ? 'halign' : 'valign'] = Gtk.Align.END;
+  }
+  if (box.pack_start) {
+    box[end ? 'pack_end' : 'pack_start'](child, expand, expand, padding);
+  } else {
+    if (expand) {
+      child[horiz ? 'hexpand' : 'vexpand'] = true;
+    }
+    if (padding) {
+      child[horiz ? 'margin_left' : 'margin_top'] = padding;
+      child[horiz ? 'margin_right' : 'margin_bottom'] = padding;
+    }
+
+    box.append(child);
+  }
+}
+
 const Settings = {
   'lwsmpath': {
     type: "s",
@@ -94,8 +115,8 @@ const SettingsBox = new GObject.Class({
       widget = new SettingsSwitch(setting);
     }
 
-    this.pack_start(label, true, true, 0);
-    this.pack_end(widget, true, true, 0);
+    safe_append(this, label, true, 20, false);
+    safe_append(this, widget, true, 20, true);
   }
 });
 
@@ -159,32 +180,26 @@ const PrefsWidget = new GObject.Class({
 
   _init: function() {
     this.parent();
-    let frame = new Gtk.Box({
-      orientation: Gtk.Orientation.VERTICAL,
-      border_width: 10, margin: 20
-    });
+
     const introText = new Gtk.Label({
       label: 'If not done already you need to manually install lwsm globally via npm (nodejs needs to be installed). you can run: \n\nnpm install -g linux-window-session-manager\n\nfrom your command line to do so. After installation you can check the path via: \n\nwhich lwsm',
       xalign: 0,
       wrap: true,
     });
 
-    this.pack_start(introText, false, false, 20);
-
-    frame.show_all();
+    safe_append(this, introText, false, 20, false);
 
     let settingsBox;
-
     for (let setting in Settings) {
       settingsBox = new SettingsBox(setting);
-      this.pack_start(settingsBox, false, false, 20);
+      safe_append(this, settingsBox, false, 20, false);
     }
 
     const linkBtn = new Gtk.LinkButton({
       uri: 'https://github.com/johannesjo/gnome-shell-extension-window-session-manager',
       label: 'For more information and help check out the github page'
     });
-    this.pack_end(linkBtn, false, false, 20);
+    safe_append(this, linkBtn, true, 20, true);
   }
 });
 
@@ -195,7 +210,9 @@ function init() {
 
 function buildPrefsWidget() {
   let widget = new PrefsWidget();
-  widget.show_all();
+  if (widget.show_all) {
+    widget.show_all(); // Gtk3
+  }
   return widget;
 }
 
